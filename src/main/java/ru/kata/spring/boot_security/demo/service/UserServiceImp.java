@@ -51,8 +51,8 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public User findByUsername(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Override
@@ -62,13 +62,13 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
-    public List<Role> listRoles() {
+    public List<Role> getListRole() {
         return roleRepository.findAll();
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email);
         if (user == null) {
             throw new UsernameNotFoundException("Invalid username or password.");
         }

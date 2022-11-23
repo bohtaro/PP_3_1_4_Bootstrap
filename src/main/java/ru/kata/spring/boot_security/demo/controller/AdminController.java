@@ -11,6 +11,7 @@ import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -20,48 +21,28 @@ public class AdminController {
     private UserService userService;
 
 
-    @GetMapping(value = "/admin/user_list")
-    public String getUsers(ModelMap model) {
+    @GetMapping(value = "/index")
+    public String getUsers(ModelMap model, Principal principal) {
+        model.addAttribute("oneUser", userService.findByUsername(principal.getName()));
         model.addAttribute("user", userService.getAllUsers());
-        return "users_list";
+        model.addAttribute("newUser", new User());
+        model.addAttribute("roles", userService.getListRole());
+        return "index";
     }
-    @GetMapping("/admin/new")
-    public String newUserPage(Model model) {
-        User user = new User();
-        List<Role> listRoles = userService.listRoles();
-        model.addAttribute("listRoles", listRoles);
-        model.addAttribute("user", user);
 
-        return "new_user";
-    }
-    @PostMapping(value = "/admin/save")
-    public String saveUser(@ModelAttribute("user") User user) {
+    @PostMapping("/save")
+    public String saveUser(@ModelAttribute("newUser") User user) {
         userService.saveUser(user);
-
-        return "redirect:/admin/user_list";
+        return "redirect:/index";
     }
-
-    @GetMapping("/admin/delete/{id}")
-    public String deleteProduct(@PathVariable(name = "id") Long id) {
+    @PatchMapping("/{id}")
+    public String updateUser(@ModelAttribute("user") User user) {
+        userService.saveUser(user);
+        return "redirect:/index";
+    }
+    @DeleteMapping("/{id}")
+    public String deleteUser(@PathVariable("id") Long id) {
         userService.deleteUser(id);
-        return "redirect:/admin/user_list";
-    }
-
-    @GetMapping("/admin/edit/{id}")
-    public ModelAndView editUserPage(@PathVariable(name = "id") int id) {
-        ModelAndView mav = new ModelAndView("edit");
-        User user = userService.findById((long) id);
-        List<Role> listRoles = userService.listRoles();
-        mav.addObject("listRoles", listRoles);
-        mav.addObject("user", user);
-
-        return mav;
-    }
-
-    @PostMapping(value = "/admin/update")
-    public String saveChangeUser(@ModelAttribute("user") User user) {
-        userService.updateUser(user);
-
-        return "redirect:/admin/user_list";
+        return "redirect:/index";
     }
 }

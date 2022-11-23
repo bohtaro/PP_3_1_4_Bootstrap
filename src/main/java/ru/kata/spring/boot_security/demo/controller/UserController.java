@@ -14,9 +14,9 @@ import java.security.Principal;
 public class UserController {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
-    @GetMapping("/user/user-page")
+    @GetMapping("/user-page")
     public String oneUser(Model model, Principal principal) {
         model.addAttribute("oneUser", userService.findByUsername(principal.getName()));
         return "user-page";
